@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ResChange</string>
+    <string name="res_change">changeValues</string>
+
+</resources>
