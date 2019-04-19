@@ -1,1 +1,1 @@
-include ':app', ':remarker', ':bsdiff'
+include ':app', ':remarker'
