@@ -80,9 +80,10 @@ public class ResourceChunkProcessor {
                         try {
                             newPackageChunk.init(buffer)
                         } catch (IllegalStateException e) {
+                            println("newPackageChunk.init error = $e"+e.getMessage())
                             // android-chunk-utils still don't know LibraryChunk
                             // catch IllegalStateException(
-                            //    String.format("PackageChunk contains an unexpected chunk: %s", chunk.getClass()));
+//                                String.format("PackageChunk contains an unexpected chunk: %s", chunk.getClass()));
                         }
                         entry.setValue(newPackageChunk)
 
@@ -169,7 +170,7 @@ public class ResourceChunkProcessor {
     }
 
     private void processXml(File xml) {
-        println("processXml = " + xml)
+//        println("processXml = " + xml)
         ResourceFile resourceFile = ResourceFile.fromInputStream(xml.newDataInputStream());
         File tmpFile = new File(xml.absolutePath + '.tmp')
         DataOutputStream dataOutputStream = tmpFile.newDataOutputStream()
@@ -182,7 +183,7 @@ public class ResourceChunkProcessor {
         dataOutputStream.flush()
         dataOutputStream.close()
         boolean result = xml.delete()
-        println("delete ? = " + result)
+//        println("delete ? = " + result)
         deleteAllFilesOfDir(xml)
         tmpFile.renameTo(xml)
     }
@@ -202,7 +203,9 @@ public class ResourceChunkProcessor {
                 while (!result && tryCount++ < 10) {
                     System.gc(); // 回收资源
                     result = path.delete();
-                    println("force delete : result = " + result)
+                    if (!result) {
+                        println("force delete path = $path: result = " + result)
+                    }
                 }
             }
             File[] files = path.listFiles();

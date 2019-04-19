@@ -44,7 +44,7 @@ class ResPkgRemakerPlugin implements Plugin<Project> {
                 ResourceChunkProcessor resourceChunkProcessor = new ResourceChunkProcessor(customPackageId)
                 project.android.applicationVariants.each { variant ->
                     String fullName = variant.getName().capitalize()
-
+                    println("variant fullName = " + fullName)
                     Task processAndroidResourceTask = project.tasks.findByName("process${fullName}Resources")
                     Task generateSourcesTask = project.tasks.findByName("generate${fullName}Sources")
                     Task customResourceTask = project.task("custom${fullName}Resources")
@@ -56,7 +56,7 @@ class ResPkgRemakerPlugin implements Plugin<Project> {
                     customResourceTask.doLast {
                         TaskOutputs taskOutputs = processAndroidResourceTask.getOutputs()
                         resourceOutputFiles = taskOutputs.files.files
-                        println(resourceOutputFiles)
+                        println("resourceOutputFiles = $resourceOutputFiles")
                         for (File output : resourceOutputFiles) {
                             if (output.isDirectory()) {
                                 output.eachFileRecurse {
@@ -75,25 +75,32 @@ class ResPkgRemakerPlugin implements Plugin<Project> {
                     // 替换R.java中的资源开头
                     JavaCompile javaCompile = variant.getJavaCompile()
                     javaCompile.doFirst {
+                        println("准备处理R文件相关...")
                         for (File f : javaCompile.source.files) {
+                            println("f.name = " + f.name)
                             if (f.isFile()) {
                                 if (f.name == 'R.java') {
+                                    println("处理R.java.")
                                     generateRProcessor.process(f)
                                 }
                             } else if (f.isDirectory()) {
                                 f.eachFileRecurse {
                                     file ->
                                         if (file.name == 'R.java') {
+                                            println("处理R.java. 2")
                                             generateRProcessor.process(file)
                                         }
                                 }
                             }
                         }
+                        println("处理resourceOutputFiles...")
                         for (File f : resourceOutputFiles) {
+                            println("f.name = " + f.name)
                             if (f.isDirectory()) {
                                 f.eachFileRecurse {
                                     file ->
                                         if (file.name == 'R.txt') {
+                                            println("处理R.txt.")
                                             generateRProcessor.process(file)
                                         }
                                 }
@@ -115,7 +122,7 @@ class ResPkgRemakerPlugin implements Plugin<Project> {
         ZipUtil.pack(workPath, apk)
 //        FileUtils.deleteDirectory(workPath)
         // 为什么要删除掉工作空间
-        deleteAllFilesOfDir(workPath)
+//        deleteAllFilesOfDir(workPath)
     }
 
     /**
